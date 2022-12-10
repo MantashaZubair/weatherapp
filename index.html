@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherApp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="showTime()">
+    <main>
+        <form action="">
+            <div class="row">
+                <input type="search" id="search" placeholder="search location">
+            </div>
+        </form>
+  
+    <p id="date">
+        WED | OCT 23 |<h5></h5>
+   </p>
+   <h1 id="city">City Name</h1>
+   
+    <div class="row" id="weather">
+        <!-- <div >
+          <img src="image.png" width="75px" height="75px" alt="">  
+        </div>
+        <div>
+            <h2>32<sup>o</sup>C</h2>
+            <h4>Clear</h4>
+        </div> -->
+    </div>
+    </main>
+
+
+<script>
+     const form = document.querySelector("form")
+     const search=document.getElementById("search")
+    const curDate = document.getElementById("date");
+    const weather = document.getElementById("weather");
+    const city = document.getElementById("city")
+    const tempStatus = "Clouds";
+
+    const getWeather = async(city)=>{
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=5355d2556231cdcca9d30ef49a5d90b9`
+        const response = await fetch(url)
+        const data = await response.json()
+       showWeather(data)
+    }
+    const showWeather =(data)=>{
+        if(data.cod=="404"){
+            weather.innerHTML=`<h4>City not Found, Please Enter CityName</h4>`
+            return;
+        }
+      weather.innerHTML = ` <div >
+       <img src= "http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"> 
+        </div>
+        <div>
+            <h2>${data.main.temp}<sup>o</sup>C</h2>
+            <h4>${data.weather[0].main}</h4>
+        </div>`
+    }
+
+    form.addEventListener(
+    "submit",
+    function(event){
+        getWeather(search.value)
+        city.innerHTML=search.value
+  event.preventDefault()
+  search.value = ""
+    }
+   )
+
+    const getCurrentDay =()=>{
+        const weekday = ["Sun","Mon","Tues","Wed","Thu","Fri","Sat"];
+        let currentTime = new Date();
+       let day= weekday[currentTime.getDay()];
+       return day;
+    }
+
+   const getCurrentTime=()=>{
+     var months = ["jan","Feb","Mar","Apr","May","June","July","Aug","Sept","Oct","Nov","Dec"]
+    var now = new Date();
+    var month= months[now.getMonth()];
+    var date= now.getDate();
+     return `${month} ${date}`
+   }
+
+  const showTime=()=>{
+    var d= new Date();
+    let hours = d.getHours();
+    let mins = d.getMinutes();
+    let sec = d.getSeconds();
+
+    let period="AM";
+    if (hours>11){
+        period="PM";
+        if(hours > 12) hours -=12;
+    }
+    if(hours<10){
+        hours ="0"+hours
+    }
+    if(mins <10){
+        mins ="0" +mins;
+    }
+    if(sec<10){
+        sec ="0"+ sec
+    }
+    var time = `${hours} :  ${mins}  :  ${sec}  ${period}`
+   document.getElementsByTagName("h5")[0].innerText = time 
+    setTimeout(showTime,1000);
+    
+   }
+   curDate.innerHTML=getCurrentDay() + " | " + getCurrentTime() + "|"
+ 
+</script>
+</body>
+</html>
